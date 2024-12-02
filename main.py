@@ -13,34 +13,35 @@ def main(page: ft.Page):
                 ft.View(
                     '/',
                     [
-                        ft.Container(
-                            content=ft.Column(
-                                controls=[
+                        ft.Column(
+                            controls=[
+                                ft.Container(
                                     ft.Text('Login', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200),
-                                    ft.Container(
-                                        ft.ElevatedButton(
-                                            'Aluno', 
-                                            on_click=lambda _: page.go('/loginAluno'), 
-                                            width=300, 
-                                            color=ft.colors.BLUE_200
-                                        ), 
-                                        alignment=ft.alignment.center
-                                    ),
-                                    ft.Container(
-                                        ft.ElevatedButton(
-                                            'Professor', 
-                                            on_click=lambda _: page.go('/loginProfessor'), 
-                                            width=300, 
-                                            color=ft.colors.BLUE_200
-                                        ), 
-                                        alignment=ft.alignment.center
-                                    )
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER
-                            ),
-                            width=300,
-                            alignment=ft.alignment.center
+                                    alignment=ft.alignment.center
+                                ),
+                                ft.Container(
+                                    ft.ElevatedButton(
+                                        'Aluno', 
+                                        on_click=lambda _: page.go('/loginAluno'), 
+                                        width=300, 
+                                        color=ft.colors.BLUE_200
+                                    ), 
+                                    alignment=ft.alignment.center
+                                ),
+                                ft.Container(
+                                    ft.ElevatedButton(
+                                        'Professor', 
+                                        on_click=lambda _: page.go('/loginProfessor'), 
+                                        width=300, 
+                                        color=ft.colors.BLUE_200
+                                    ), 
+                                    alignment=ft.alignment.center
+                                )
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            expand=True
                         )
+                        
                     ]
                 )
             )
@@ -50,18 +51,27 @@ def main(page: ft.Page):
                 ft.View(
                     '/loginAluno',
                     [
-                        ft.Container(
-                            content=ft.Column(
-                                controls=[
+                        ft.Column(
+                            controls=[
+                                ft.Container(
                                     ft.Text('Login Aluno', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200),
-                                    entradaMatricula,
-                                    entradaSenha,
-                                    ft.Container(ft.ElevatedButton('Entrar', on_click=loginAluno, width=150, color=ft.colors.BLUE_200), alignment=ft.alignment.center)
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER
-                            ),
-                            width=300,
-                            alignment=ft.alignment.center
+                                    alignment=ft.alignment.center
+                                ),
+                                ft.Row(
+                                    [entradaMatricula],
+                                    alignment=ft.MainAxisAlignment.CENTER
+                                ),
+                                ft.Row(
+                                    [entradaSenha],
+                                    alignment=ft.MainAxisAlignment.CENTER
+                                ),
+                                ft.Container(
+                                    ft.ElevatedButton('Entrar', on_click=loginAluno, width=150, color=ft.colors.BLUE_200), 
+                                    alignment=ft.alignment.center
+                                )
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            expand=True
                         )
                     ]
                 )
@@ -72,18 +82,27 @@ def main(page: ft.Page):
                 ft.View(
                     '/loginProfessor',
                     [
-                        ft.Container(
-                            content=ft.Column(
-                                controls=[
+                        ft.Column(
+                            controls=[
+                                ft.Container(
                                     ft.Text('Login Professor', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200),
-                                    entradaMatricula,
-                                    entradaSenha,
-                                    ft.Container(ft.ElevatedButton('Entrar', on_click=loginProfessor, width=150, color=ft.colors.BLUE_200), alignment=ft.alignment.center)
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER
-                            ),
-                            width=300,
-                            alignment=ft.alignment.center
+                                    alignment=ft.alignment.center
+                                ),
+                                ft.Row(
+                                    [entradaMatricula],
+                                    alignment=ft.MainAxisAlignment.CENTER
+                                ),
+                                ft.Row(
+                                    [entradaSenha],
+                                    alignment=ft.MainAxisAlignment.CENTER
+                                ),
+                                ft.Container(
+                                    ft.ElevatedButton('Entrar', on_click=loginProfessor, width=150, color=ft.colors.BLUE_200), 
+                                    alignment=ft.alignment.center
+                                )
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            expand=True
                         )
                     ]
                 )
