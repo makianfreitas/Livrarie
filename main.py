@@ -37,6 +37,7 @@ def main(page: ft.Page):
                                     ), 
                                     alignment=ft.alignment.center
                                 )
+                                
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
                             expand=True
@@ -72,7 +73,24 @@ def main(page: ft.Page):
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
                             expand=True
-                        )
+                        ),
+
+                        # Botão 'Voltar'
+                        ft.Row(
+                            controls=[
+                                ft.Container(
+                                    ft.ElevatedButton(
+                                        text="Voltar",
+                                        on_click=lambda _: page.go('/'),
+                                        bgcolor=ft.colors.BLUE_400,
+                                        color=ft.colors.WHITE,
+                                    ),
+                                    alignment=ft.alignment.top_right,
+                                    padding=10,
+                                ),
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        ),
                     ]
                 )
             )
@@ -103,7 +121,24 @@ def main(page: ft.Page):
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,
                             expand=True
-                        )
+                        ),
+
+                        # Botão 'Voltar'
+                        ft.Row(
+                            controls=[
+                                ft.Container(
+                                    ft.ElevatedButton(
+                                        text="Voltar",
+                                        on_click=lambda _: page.go('/'),
+                                        bgcolor=ft.colors.BLUE_400,
+                                        color=ft.colors.WHITE,
+                                    ),
+                                    alignment=ft.alignment.top_right,
+                                    padding=10,
+                                ),
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        ),
                     ]
                 )
             )
