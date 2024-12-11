@@ -7,8 +7,8 @@ import sqlite3
 def get_disciplinas(professorId):
     conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
     cursor = conn.cursor()
-    '''cursor.execute("SELECT IdDisciplina, Nome, Descricao, ProfessorId FROM Disciplina WHERE ProfessorId = ?", (professorId,))  # Consulta os dados'''
-    cursor.execute("SELECT IdDisciplina, Nome, Descricao, ProfessorId FROM Disciplina")
+    cursor.execute("SELECT IdDisciplina, Nome, Descricao, ProfessorId FROM Disciplina WHERE ProfessorId = ?", (professorId,))  # Consulta os dados
+    #cursor.execute("SELECT IdDisciplina, Nome, Descricao, ProfessorId FROM Disciplina")
     rows = cursor.fetchall()
     conn.close()
     return rows
@@ -44,6 +44,62 @@ def get_unique_professor_nome(professorId):
     row = cursor.fetchone()
     conn.close()
     return row[0] if row else None
+
+def get_alunos_egenharia():
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Nome FROM Aluno WHERE EG = 1")  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_alunos_metodologia():
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Nome FROM Aluno WHERE MDS = 1")  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_alunos_redes():
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Nome FROM Aluno WHERE RC = 1")  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_alunos_informatica():
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Nome FROM Aluno WHERE IF = 1")  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_alunos_probabilidade():
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Nome FROM Aluno WHERE PE = 1")  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_alunos_economia():
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Nome FROM Aluno WHERE EC = 1")  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+def get_alunos_banco():
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Nome FROM Aluno WHERE BD = 1")  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
 
 def faz_engenharia_de_software(alunoId):
     conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
@@ -123,7 +179,7 @@ def faz_banco_de_dados(alunoId):
         return False
 
 materiaAtual = -1
-professorAtual = -1
+professorAtual = 2
 alunoAtual = 5
 
 def main(page: ft.Page):
@@ -142,6 +198,83 @@ def main(page: ft.Page):
             page.views.extend(navigation_stack)
             page.update()
 
+    def refresh_alunos_engenharia():
+        alunos_engenharia_list.controls.clear()
+        for aluno in get_alunos_egenharia():
+            alunos_engenharia_list.controls.append(
+                ft.Container(
+                    content=ft.Text(value=f'● {aluno[0]}', size=20, color=ft.colors.BLUE_200)
+                )
+            )
+        page.update()
+    alunos_engenharia_list = ft.Column()
+
+    def refresh_alunos_metodologia():
+        alunos_metodologia_list.controls.clear()
+        for aluno in get_alunos_metodologia():
+            alunos_metodologia_list.controls.append(
+                ft.Container(
+                    content=ft.Text(value=f'● {aluno[0]}', size=20, color=ft.colors.BLUE_200)
+                )
+            )
+        page.update()
+    alunos_metodologia_list = ft.Column()
+
+    def refresh_alunos_redes():
+        alunos_redes_list.controls.clear()
+        for aluno in get_alunos_redes():
+            alunos_redes_list.controls.append(
+                ft.Container(
+                    content=ft.Text(value=f'● {aluno[0]}', size=20, color=ft.colors.BLUE_200)
+                )
+            )
+        page.update()
+    alunos_redes_list = ft.Column()
+
+    def refresh_alunos_informatica():
+        alunos_informatica_list.controls.clear()
+        for aluno in get_alunos_informatica():
+            alunos_informatica_list.controls.append(
+                ft.Container(
+                    content=ft.Text(value=f'● {aluno[0]}', size=20, color=ft.colors.BLUE_200)
+                )
+            )
+        page.update()
+    alunos_informatica_list = ft.Column()
+
+    def refresh_alunos_probabilidade():
+        alunos_probabilidade_list.controls.clear()
+        for aluno in get_alunos_probabilidade():
+            alunos_probabilidade_list.controls.append(
+                ft.Container(
+                    content=ft.Text(value=f'● {aluno[0]}', size=20, color=ft.colors.BLUE_200)
+                )
+            )
+        page.update()
+    alunos_probabilidade_list = ft.Column()
+
+    def refresh_alunos_economia():
+        alunos_economia_list.controls.clear()
+        for aluno in get_alunos_economia():
+            alunos_economia_list.controls.append(
+                ft.Container(
+                    content=ft.Text(value=f'● {aluno[0]}', size=20, color=ft.colors.BLUE_200)
+                )
+            )
+        page.update()
+    alunos_economia_list = ft.Column()
+
+    def refresh_alunos_banco():
+        alunos_banco_list.controls.clear()
+        for aluno in get_alunos_banco():
+            alunos_banco_list.controls.append(
+                ft.Container(
+                    content=ft.Text(value=f'● {aluno[0]}', size=20, color=ft.colors.BLUE_200)
+                )
+            )
+        page.update()
+    alunos_banco_list = ft.Column()
+
     # Função para atualizar a lista de disciplinas na interface
     def refresh_disciplinas():
         def abrir_pagina_materia(e):
@@ -150,7 +283,7 @@ def main(page: ft.Page):
             show_view(materia_professor_view())
 
         disciplina_list.controls.clear()  # Limpa a lista
-        for disciplina in get_disciplinas(1):
+        for disciplina in get_disciplinas(professorAtual):
             disciplina_list.controls.append(
                 ft.Container(
                     content=ft.ListTile(
@@ -344,6 +477,7 @@ def main(page: ft.Page):
                         # Seção principal com as disciplinas e atividades pendentes
                         ft.Row(
                             [
+                                # Coluna das disciplinas
                                 ft.Column(
                                     [
                                         ft.Container(
@@ -573,7 +707,6 @@ def main(page: ft.Page):
                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                 alignment=ft.alignment.center_left
                                             ),
-                                            width=1080,
                                             expand=True
                                         )
                                     ],
@@ -611,7 +744,7 @@ def main(page: ft.Page):
         areaView = ft.View(
             '/areaProfessor',
             [
-                # Página inicial do aluno
+                # Página inicial do professor
                 ft.Column(
                     [
                         # Cabeçalho da página
@@ -716,7 +849,31 @@ def main(page: ft.Page):
         )
 
     def materia_professor_view(): #Página de detalhes da matéria do professor
-        return ft.View(
+        def exibir_alunos():
+            match materiaAtual:
+                case 1:
+                    refresh_alunos_engenharia()
+                    return alunos_engenharia_list
+                case 2:
+                    refresh_alunos_metodologia()
+                    return alunos_metodologia_list
+                case 3:
+                    refresh_alunos_redes()
+                    return alunos_redes_list
+                case 4:
+                    refresh_alunos_informatica()
+                    return alunos_informatica_list
+                case 5:
+                    refresh_alunos_probabilidade()
+                    return alunos_probabilidade_list
+                case 6:
+                    refresh_alunos_economia()
+                    return alunos_economia_list
+                case 7:
+                    refresh_alunos_banco()
+                    return alunos_banco_list
+
+        materiaView = ft.View(
             '/materiaProfessor',
             [
                 ft.Column(
@@ -743,17 +900,68 @@ def main(page: ft.Page):
                                 )
                             ]
                         ),
-                        ft.Container(
-                            content=ft.Text(value=get_unique_disciplina_descricao(materiaAtual), size=30, color=ft.colors.BLUE_200),
-                            border_radius=ft.border_radius.all(12),
-                            bgcolor=ft.colors.WHITE10,
-                            padding=ft.padding.all(20)
+                        # Seção principal
+                        ft.Row(
+                            [
+                                ft.Column(
+                                    [
+                                        # Descrição
+                                        ft.Column(
+                                            [
+                                                ft.Container(
+                                                    content=ft.Text('Descrição', size=20, color=ft.colors.BLUE_200), 
+                                                    padding=ft.padding.only(left=20, top=12)
+                                                ),
+                                                ft.Container(
+                                                    content=ft.Text(value=get_unique_disciplina_descricao(materiaAtual), size=25, color=ft.colors.BLUE_200),
+                                                    border_radius=ft.border_radius.all(12),
+                                                    bgcolor=ft.colors.WHITE10,
+                                                    padding=ft.padding.all(20),
+                                                    alignment=ft.alignment.top_center,
+                                                    #expand=True
+                                                ),
+                                            ],
+                                            scroll='auto',
+                                            alignment=ft.alignment.top_center,
+                                            expand=True
+                                        ),
+                                    ],
+                                    expand=True
+                                ),
+
+                                # Alunos matriculados
+                                ft.Column(
+                                    [
+                                        ft.Container(
+                                            content=ft.Text('Alunos matriculados', size=20, color=ft.colors.BLUE_200), 
+                                            padding=ft.padding.only(left=20, top=12)
+                                        ),
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    exibir_alunos()
+                                                ],
+                                                alignment=ft.alignment.top_center,
+                                                expand=True
+                                            ), 
+                                            bgcolor=ft.colors.WHITE10,
+                                            border_radius=ft.border_radius.all(12),
+                                            padding=ft.padding.all(20),
+                                            width=400,
+                                            expand=True
+                                        )
+                                    ],
+                                    #alignment=ft.alignment.top_center
+                                )
+                            ],
+                            expand=True
                         )
                     ],
                     expand=True  # Expande a Column principal para ocupar o espaço vertical da página
                 )
             ]
         )
+        return materiaView
 
     page.title = "Livrarie"
     page.padding = 20
