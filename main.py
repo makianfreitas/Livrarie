@@ -3,6 +3,8 @@ import flet as ft
 
 os.environ["FLET_WS_MAX_MESSAGE_SIZE"] = "8000000"
 
+# Livrarie
+
 def main(page: ft.Page):
 
     def route_change(route):
@@ -53,9 +55,19 @@ def main(page: ft.Page):
                     [
                         ft.Column(
                             controls=[
-                                ft.Container(
-                                    ft.Text('Login Aluno', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200),
-                                    alignment=ft.alignment.center
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            ft.Row(
+                                                [
+                                                    ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=lambda _: page.go('/')),
+                                                    ft.Text('Login Aluno', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200)
+                                                ]
+                                            ),
+                                            width=300
+                                        )
+                                    ],
+                                    alignment=ft.MainAxisAlignment.CENTER
                                 ),
                                 ft.Row(
                                     [entradaMatricula],
@@ -84,9 +96,19 @@ def main(page: ft.Page):
                     [
                         ft.Column(
                             controls=[
-                                ft.Container(
-                                    ft.Text('Login Professor', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200),
-                                    alignment=ft.alignment.center
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            ft.Row(
+                                                [
+                                                    ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=lambda _: page.go('/')),
+                                                    ft.Text('Login Professor', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200)
+                                                ]
+                                            ),
+                                            width=300
+                                        )
+                                    ],
+                                    alignment=ft.MainAxisAlignment.CENTER
                                 ),
                                 ft.Row(
                                     [entradaMatricula],
@@ -518,6 +540,7 @@ def main(page: ft.Page):
                                 # Cabeçalho da página
                                 ft.Row(
                                     [
+                                        ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=lambda _: page.go('/areaAluno')),
                                         ft.Container(
                                             content=ft.Text(
                                                 'Livrarie Aluno', 
@@ -534,7 +557,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Text('[Disciplina]', size=40, color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
                                 ft.Text('[Professor]', size=20, color=ft.colors.BLUE_200),
-                                ft.Text('[Ementa]', size=30, color=ft.colors.BLUE_200)
+                                ft.Text('[Descrição]', size=30, color=ft.colors.BLUE_200)
                             ],
                             expand=True  # Expande a Column principal para ocupar o espaço vertical da página
                         )
@@ -546,6 +569,9 @@ def main(page: ft.Page):
 
     def view_pop(view):
         page.views.pop()
+        if page.views:
+            page.go(page.views[-1].route)
+
         top_view = page.views[-1] if page.views else None
         if top_view:
             page.go(top_view.route)
@@ -553,8 +579,6 @@ def main(page: ft.Page):
     page.title = "Livrarie"
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    '''page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER'''
     page.padding = 20
     page.go('/')
 
@@ -581,113 +605,6 @@ def main(page: ft.Page):
     entradaMatricula = ft.TextField(label='Matrícula', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
     entradaSenha = ft.TextField(label='Senha', password=True, border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
 
-    
-    
-    
-
-
-
-
-    #page.on_resize = lambda e: parteSuperior.update(width=page.width)
-
     page.update()
 
 ft.app(target=main)
-
-'''# Coluna de Atividades Pendentes
-                                        ft.Column(
-                                            [
-                                                ft.Container(
-                                                    content=ft.Text('Mensagens recentes', size=20, color=ft.colors.BLUE_200), 
-                                                    padding=ft.padding.only(left=20, top=12)
-                                                ),
-                                                ft.ElevatedButton(
-                                                    content=ft.Column(
-                                                        [
-                                                            ft.Row(
-                                                                [
-                                                                    ft.Column(
-                                                                        [
-                                                                            ft.Text('Projeto - Segunda etapa', size=24, color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
-                                                                            ft.Text('Metodologia de Desenvolvimento de Sistemas 2', size=18, color=ft.colors.BLUE_200)
-                                                                        ],
-                                                                        expand=True
-                                                                    ),
-                                                                    ft.Text('Prazo de entrega:\n13/11/2024, 08:00', color=ft.colors.RED_500)
-                                                                ]
-                                                            ),
-                                                            ft.Row(
-                                                                [
-                                                                    ft.Column(
-                                                                        [
-                                                                            ft.Text('Lista 1', size=24, color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
-                                                                            ft.Text('Economia', size=18, color=ft.colors.BLUE_200)
-                                                                        ],
-                                                                        expand=True
-                                                                    ),
-                                                                    ft.Text('Prazo de entrega:\n15/11/2024, 23:59', color=ft.colors.BLUE_200)
-                                                                ]
-                                                            )
-                                                        ],
-                                                        spacing=20
-                                                    ),
-                                                    style=ft.ButtonStyle(
-                                                        bgcolor=ft.colors.WHITE10,
-                                                        padding=ft.padding.all(20),
-                                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                                        alignment=ft.alignment.center_left
-                                                    ),
-                                                    width=1080,
-                                                    expand=True
-                                                )
-                                            ],
-                                            expand=True  # Expande a coluna para ocupar o espaço verticalmente
-                                        )''''''# Coluna de Atividades Pendentes
-                                        ft.Column(
-                                            [
-                                                ft.Container(
-                                                    content=ft.Text('Mensagens recentes', size=20, color=ft.colors.BLUE_200), 
-                                                    padding=ft.padding.only(left=20, top=12)
-                                                ),
-                                                ft.ElevatedButton(
-                                                    content=ft.Column(
-                                                        [
-                                                            ft.Row(
-                                                                [
-                                                                    ft.Column(
-                                                                        [
-                                                                            ft.Text('Projeto - Segunda etapa', size=24, color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
-                                                                            ft.Text('Metodologia de Desenvolvimento de Sistemas 2', size=18, color=ft.colors.BLUE_200)
-                                                                        ],
-                                                                        expand=True
-                                                                    ),
-                                                                    ft.Text('Prazo de entrega:\n13/11/2024, 08:00', color=ft.colors.RED_500)
-                                                                ]
-                                                            ),
-                                                            ft.Row(
-                                                                [
-                                                                    ft.Column(
-                                                                        [
-                                                                            ft.Text('Lista 1', size=24, color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
-                                                                            ft.Text('Economia', size=18, color=ft.colors.BLUE_200)
-                                                                        ],
-                                                                        expand=True
-                                                                    ),
-                                                                    ft.Text('Prazo de entrega:\n15/11/2024, 23:59', color=ft.colors.BLUE_200)
-                                                                ]
-                                                            )
-                                                        ],
-                                                        spacing=20
-                                                    ),
-                                                    style=ft.ButtonStyle(
-                                                        bgcolor=ft.colors.WHITE10,
-                                                        padding=ft.padding.all(20),
-                                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                                        alignment=ft.alignment.center_left
-                                                    ),
-                                                    width=1080,
-                                                    expand=True
-                                                )
-                                            ],
-                                            expand=True  # Expande a coluna para ocupar o espaço verticalmente
-                                        )'''
