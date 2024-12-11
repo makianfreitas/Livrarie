@@ -2,6 +2,8 @@
 import flet as ft
 import sqlite3
 
+#TESTE
+
 #os.environ["FLET_WS_MAX_MESSAGE_SIZE"] = "8000000"
 
 # Função para obter os dados da tabela Disciplina
