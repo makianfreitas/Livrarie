@@ -196,9 +196,33 @@ def salvar_material(titulo, caminho_arquivo, disciplinaId):
     conn.commit()
     conn.close()
 
+def apagar_material_do_banco_de_dados(e):
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM Material WHERE IdMaterial = ?", (materialAtual,))
+    conn.commit()
+    conn.close()
+
+def get_unique_material_titulo(materialId):
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Titulo FROM Material WHERE IdMaterial = ?", (materialId,))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row else None
+
+def get_unique_material_arquivo(materialId):
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT Arquivo FROM Material WHERE IdMaterial = ?", (materialId,))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row else None
+
 disciplinaAtual = -1
 professorAtual = 1
 alunoAtual = 5
+materialAtual = -1
 
 def main(page: ft.Page):
     navigation_stack = [] #Pilha de navegação
@@ -294,24 +318,59 @@ def main(page: ft.Page):
     alunos_banco_list = ft.Column()
 
     def refresh_materiais():
-        #def adicionar_material(disciplinaId):
+        def apagar_material(e):
+            apagar_material_do_banco_de_dados(e)
+            fechar_dialogo_apagar_material(e)
+            refresh_materiais()
+            page.snack_bar = ft.SnackBar(content=ft.Text('Material apagado com sucesso', size=20))
+            page.snack_bar.open = True
+            page.update()
+
+        def abrir_dialogo_apagar_material(e):
+            global materialAtual
+            materialAtual = e.control.data
+            print(materialAtual)
+            page.overlay.append(dialogoApagarMaterial)
+            dialogoApagarMaterial.open = True
+            page.update()
+
+        def fechar_dialogo_apagar_material(e):
+            dialogoApagarMaterial.open = False
+            page.update()
+
+        dialogoApagarMaterial = ft.AlertDialog(
+            title=ft.Text('Deseja apagar este material?', color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
+            actions=[
+                ft.TextButton('Sim', on_click=apagar_material),
+                ft.TextButton('Não', on_click=fechar_dialogo_apagar_material)
+            ]
+        )
 
         materiais_list.controls.clear()
-        for material in get_materiais(disciplinaAtual):
-            materiais_list.controls.append(
-                ft.Container(
-                    content=ft.ListTile(
-                        title=ft.Text(
-                            material[1], 
-                            size=25, 
-                            color=ft.colors.BLUE_200, 
-                            weight=ft.FontWeight.BOLD
-                        )
-                    ),
-                    border_radius=ft.border_radius.all(12),
-                    bgcolor=ft.colors.WHITE10
+        if get_materiais(disciplinaAtual) != None:
+            for material in get_materiais(disciplinaAtual):
+                materiais_list.controls.append(
+                    ft.Container(
+                        content=ft.ListTile(
+                            title=ft.Text(
+                                material[1], 
+                                size=25, 
+                                color=ft.colors.BLUE_200, 
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            data=material[0],
+                            #on_click=lambda e: abrir_dialogo_apagar_material(e),
+                            trailing=ft.IconButton(
+                                ft.icons.DELETE_ROUNDED, 
+                                icon_color=ft.colors.RED_400,
+                                data=material[0],
+                                on_click=lambda e: abrir_dialogo_apagar_material(e)
+                            )
+                        ),
+                        border_radius=ft.border_radius.all(12),
+                        bgcolor=ft.colors.WHITE10
+                    )
                 )
-            )
         materiais_list.controls.append(
                 ft.ElevatedButton(
                     content=ft.Text(
@@ -1042,8 +1101,7 @@ def main(page: ft.Page):
                                             width=400,
                                             expand=True
                                         )
-                                    ],
-                                    #alignment=ft.alignment.top_center
+                                    ]
                                 )
                             ],
                             expand=True
@@ -1100,6 +1158,40 @@ def main(page: ft.Page):
             ]
         )
 
+    def detalhe_material_view():
+        return ft.View(
+            '/detalheMaterial',
+            [
+                ft.Column(
+                    [
+                        # Cabeçalho da página
+                        ft.Row(
+                            [
+                                ft.Container(
+                                    content=ft.Row(
+                                        [
+                                            ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=go_back, icon_color=ft.colors.BLACK87),
+                                            ft.Text(
+                                                value=get_unique_material_titulo(), 
+                                                size=40, 
+                                                weight=ft.FontWeight.BOLD, 
+                                                color=ft.colors.BLACK87
+                                            )
+                                        ]
+                                    ),
+                                    padding=ft.padding.all(20), 
+                                    bgcolor=ft.colors.BLUE_200, 
+                                    border_radius=12, 
+                                    expand=True
+                                )
+                            ]
+                        ),
+                    ],
+                    expand=True
+                )
+            ]
+        )
+
     page.title = "Livrarie"
     page.padding = 20
     show_view(home_view())
@@ -1132,6 +1224,11 @@ def main(page: ft.Page):
             arquivo_selecionado = e.files[0].path
             if arquivo_selecionado:
                 salvar_material(entradaNomeMaterial.value, arquivo_selecionado, disciplinaAtual)
+                go_back(e)
+                refresh_materiais()
+                page.snack_bar = ft.SnackBar(content=ft.Text('Material adicionado com sucesso', size=20))
+                page.snack_bar.open = True
+                page.update()
                 print('Material salvo')
             else:
                 print('Selecione um arquivo')
