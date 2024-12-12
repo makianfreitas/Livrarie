@@ -2,8 +2,9 @@
 
 import flet as ft
 import sqlite3
+from flet import FilePicker, FilePickerResultEvent
 
-# Função para obter os dados da tabela Disciplina
+# Funções para obter os dados das tabelas
 def get_disciplinas(professorId):
     conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
     cursor = conn.cursor()
@@ -178,8 +179,25 @@ def faz_banco_de_dados(alunoId):
     else:
         return False
 
-materiaAtual = -1
-professorAtual = 2
+def get_materiais(disciplinaId):
+    conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
+    cursor = conn.cursor()
+    cursor.execute("SELECT IdMaterial, Titulo, Arquivo FROM Material WHERE DisciplinaId = ?", (disciplinaId,))  # Consulta os dados
+    rows = cursor.fetchall()
+    conn.close()
+    return rows if rows else None
+
+def salvar_material(titulo, caminho_arquivo, disciplinaId):
+    with open(caminho_arquivo, "rb") as arquivo:
+        blob = arquivo.read()
+    conn = sqlite3.connect("livrarie.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO Material (Titulo, Arquivo, DisciplinaId) VALUES (?, ?, ?)", (titulo, blob, disciplinaId))
+    conn.commit()
+    conn.close()
+
+disciplinaAtual = -1
+professorAtual = 1
 alunoAtual = 5
 
 def main(page: ft.Page):
@@ -275,12 +293,50 @@ def main(page: ft.Page):
         page.update()
     alunos_banco_list = ft.Column()
 
-    # Função para atualizar a lista de disciplinas na interface
+    def refresh_materiais():
+        #def adicionar_material(disciplinaId):
+
+        materiais_list.controls.clear()
+        for material in get_materiais(disciplinaAtual):
+            materiais_list.controls.append(
+                ft.Container(
+                    content=ft.ListTile(
+                        title=ft.Text(
+                            material[1], 
+                            size=25, 
+                            color=ft.colors.BLUE_200, 
+                            weight=ft.FontWeight.BOLD
+                        )
+                    ),
+                    border_radius=ft.border_radius.all(12),
+                    bgcolor=ft.colors.WHITE10
+                )
+            )
+        materiais_list.controls.append(
+                ft.ElevatedButton(
+                    content=ft.Text(
+                        value='Adicionar material',
+                        size=20,
+                        color=ft.colors.BLUE_200
+                    ),
+                    style=ft.ButtonStyle(
+                        bgcolor=ft.colors.WHITE10,
+                        padding=ft.padding.all(20),
+                        shape=ft.RoundedRectangleBorder(radius=12),
+                        alignment=ft.alignment.center_left
+                    ),
+                    on_click=lambda e: show_view(adiciona_material_view()),
+                    expand=True
+                )
+            )
+        page.update()
+    materiais_list = ft.Column()
+
     def refresh_disciplinas():
-        def abrir_pagina_materia(e):
-            global materiaAtual
-            materiaAtual = e.control.data
-            show_view(materia_professor_view())
+        def abrir_pagina_disciplina(e):
+            global disciplinaAtual
+            disciplinaAtual = e.control.data
+            show_view(disciplina_professor_view())
 
         disciplina_list.controls.clear()  # Limpa a lista
         for disciplina in get_disciplinas(professorAtual):
@@ -290,17 +346,17 @@ def main(page: ft.Page):
                         title=ft.Text(disciplina[1], size=30, color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
                         #subtitle=ft.Text(f'Professor(a): {get_unique_professor_nome(disciplina[3])}', size=20, color=ft.colors.BLUE_200),
                         data=disciplina[0],
-                        on_click=lambda e: abrir_pagina_materia(e)
+                        on_click=lambda e: abrir_pagina_disciplina(e)
                     ),
                     border_radius=ft.border_radius.all(12),
                     bgcolor=ft.colors.WHITE10
                 )
             )
         page.update()
-
-    # Lista de disciplinas
     disciplina_list = ft.Column()
 
+
+    # Páginas
     def home_view(): #Página de escolher login
         return ft.View(
             '/',
@@ -313,19 +369,29 @@ def main(page: ft.Page):
                         ),
                         ft.Container(
                             ft.ElevatedButton(
-                                'Aluno', 
+                                content=ft.Text('Aluno', size=20), 
                                 on_click=lambda _: show_view(login_aluno_view()), 
                                 width=300, 
-                                color=ft.colors.BLUE_200
+                                color=ft.colors.BLUE_200,
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.colors.WHITE10,
+                                    padding=ft.padding.all(20),
+                                    shape=ft.RoundedRectangleBorder(radius=12),
+                                )
                             ), 
                             alignment=ft.alignment.center
                         ),
                         ft.Container(
                             ft.ElevatedButton(
-                                'Professor', 
+                                content=ft.Text('Professor', size=20), 
                                 on_click=lambda _: show_view(login_professor_view()), 
                                 width=300, 
-                                color=ft.colors.BLUE_200
+                                color=ft.colors.BLUE_200,
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.colors.WHITE10,
+                                    padding=ft.padding.all(20),
+                                    shape=ft.RoundedRectangleBorder(radius=12),
+                                )
                             ), 
                             alignment=ft.alignment.center
                         )
@@ -333,7 +399,6 @@ def main(page: ft.Page):
                     alignment=ft.MainAxisAlignment.CENTER,
                     expand=True
                 )
-                
             ]
         )
     
@@ -366,7 +431,17 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Container(
-                            ft.ElevatedButton('Entrar', on_click=loginAluno, width=150, color=ft.colors.BLUE_200), 
+                            ft.ElevatedButton(
+                                content=ft.Text('Entrar', size=18), 
+                                on_click=loginAluno, 
+                                width=150, 
+                                color=ft.colors.BLUE_200,
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.colors.WHITE10,
+                                    padding=ft.padding.all(18),
+                                    shape=ft.RoundedRectangleBorder(radius=12),
+                                )
+                            ), 
                             alignment=ft.alignment.center
                         )
                     ],
@@ -405,7 +480,17 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Container(
-                            ft.ElevatedButton('Entrar', on_click=loginProfessor, width=150, color=ft.colors.BLUE_200), 
+                            ft.ElevatedButton(
+                                content=ft.Text('Entrar', size=18), 
+                                on_click=loginProfessor, 
+                                width=150, 
+                                color=ft.colors.BLUE_200,
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.colors.WHITE10,
+                                    padding=ft.padding.all(18),
+                                    shape=ft.RoundedRectangleBorder(radius=12),
+                                )
+                            ), 
                             alignment=ft.alignment.center
                         )
                     ],
@@ -416,10 +501,10 @@ def main(page: ft.Page):
         )
 
     def area_aluno_view(): #Área do aluno
-        def abrir_tela_materia(disciplinaId):
-            global materiaAtual
-            materiaAtual = disciplinaId
-            show_view(materia_aluno_view())
+        def abrir_tela_disciplina(disciplinaId):
+            global disciplinaAtual
+            disciplinaAtual = disciplinaId
+            show_view(disciplina_aluno_view())
 
         def abrir_dialogo(e):
             page.overlay.append(caixaDialogo)
@@ -504,7 +589,7 @@ def main(page: ft.Page):
                                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                                 alignment=ft.alignment.center_left
                                                             ),
-                                                            on_click=lambda e: abrir_tela_materia(1),
+                                                            on_click=lambda e: abrir_tela_disciplina(1),
                                                             expand=True
                                                         ),
                                                     ],
@@ -528,7 +613,7 @@ def main(page: ft.Page):
                                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                                 alignment=ft.alignment.center_left
                                                             ),
-                                                            on_click=lambda e: abrir_tela_materia(2),
+                                                            on_click=lambda e: abrir_tela_disciplina(2),
                                                             expand=True
                                                         ),
                                                     ],
@@ -552,7 +637,7 @@ def main(page: ft.Page):
                                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                                 alignment=ft.alignment.center_left
                                                             ),
-                                                            on_click=lambda e: abrir_tela_materia(3),
+                                                            on_click=lambda e: abrir_tela_disciplina(3),
                                                             expand=True
                                                         ),
                                                     ],
@@ -576,7 +661,7 @@ def main(page: ft.Page):
                                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                                 alignment=ft.alignment.center_left
                                                             ),
-                                                            on_click=lambda e: abrir_tela_materia(4),
+                                                            on_click=lambda e: abrir_tela_disciplina(4),
                                                             expand=True
                                                         ),
                                                     ],
@@ -600,7 +685,7 @@ def main(page: ft.Page):
                                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                                 alignment=ft.alignment.center_left
                                                             ),
-                                                            on_click=lambda e: abrir_tela_materia(5),
+                                                            on_click=lambda e: abrir_tela_disciplina(5),
                                                             expand=True
                                                         ),
                                                     ],
@@ -624,7 +709,7 @@ def main(page: ft.Page):
                                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                                 alignment=ft.alignment.center_left
                                                             ),
-                                                            on_click=lambda e: abrir_tela_materia(6),
+                                                            on_click=lambda e: abrir_tela_disciplina(6),
                                                             expand=True
                                                         ),
                                                     ],
@@ -648,7 +733,7 @@ def main(page: ft.Page):
                                                                 shape=ft.RoundedRectangleBorder(radius=12),
                                                                 alignment=ft.alignment.center_left
                                                             ),
-                                                            on_click=lambda e: abrir_tela_materia(7),
+                                                            on_click=lambda e: abrir_tela_disciplina(7),
                                                             expand=True
                                                         ),
                                                     ],
@@ -807,9 +892,9 @@ def main(page: ft.Page):
         refresh_disciplinas()
         return areaView
 
-    def materia_aluno_view(): #Página de detalhes da matéria do aluno
+    def disciplina_aluno_view(): #Página de detalhes da matéria do aluno
         return ft.View(
-            '/materiaAluno',
+            '/disciplinaAluno',
             [
                 ft.Column(
                     [
@@ -821,7 +906,7 @@ def main(page: ft.Page):
                                         [
                                             ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=go_back, icon_color=ft.colors.BLACK87),
                                             ft.Text(
-                                                value=get_unique_disciplina_nome(materiaAtual), 
+                                                value=get_unique_disciplina_nome(disciplinaAtual), 
                                                 size=40, 
                                                 weight=ft.FontWeight.BOLD, 
                                                 color=ft.colors.BLACK87
@@ -835,9 +920,9 @@ def main(page: ft.Page):
                                 )
                             ]
                         ),
-                        ft.Container(ft.Text(value=get_unique_professor_nome(get_unique_disciplina_professorid(materiaAtual)), size=20, color=ft.colors.BLUE_200), padding=ft.padding.only(left=20, top=12)),
+                        ft.Container(ft.Text(value=get_unique_professor_nome(get_unique_disciplina_professorid(disciplinaAtual)), size=20, color=ft.colors.BLUE_200), padding=ft.padding.only(left=20, top=12)),
                         ft.Container(
-                            content=ft.Text(value=get_unique_disciplina_descricao(materiaAtual), size=30, color=ft.colors.BLUE_200),
+                            content=ft.Text(value=get_unique_disciplina_descricao(disciplinaAtual), size=30, color=ft.colors.BLUE_200),
                             border_radius=ft.border_radius.all(12),
                             bgcolor=ft.colors.WHITE10,
                             padding=ft.padding.all(20)
@@ -848,9 +933,9 @@ def main(page: ft.Page):
             ]
         )
 
-    def materia_professor_view(): #Página de detalhes da matéria do professor
+    def disciplina_professor_view(): #Página de detalhes da matéria do professor
         def exibir_alunos():
-            match materiaAtual:
+            match disciplinaAtual:
                 case 1:
                     refresh_alunos_engenharia()
                     return alunos_engenharia_list
@@ -873,8 +958,8 @@ def main(page: ft.Page):
                     refresh_alunos_banco()
                     return alunos_banco_list
 
-        materiaView = ft.View(
-            '/materiaProfessor',
+        disciplinaView = ft.View(
+            '/disciplinaProfessor',
             [
                 ft.Column(
                     [
@@ -886,7 +971,7 @@ def main(page: ft.Page):
                                         [
                                             ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=go_back, icon_color=ft.colors.BLACK87),
                                             ft.Text(
-                                                value=get_unique_disciplina_nome(materiaAtual), 
+                                                value=get_unique_disciplina_nome(disciplinaAtual), 
                                                 size=40, 
                                                 weight=ft.FontWeight.BOLD, 
                                                 color=ft.colors.BLACK87
@@ -905,21 +990,28 @@ def main(page: ft.Page):
                             [
                                 ft.Column(
                                     [
-                                        # Descrição
+                                        # Descrição e materiais
                                         ft.Column(
                                             [
                                                 ft.Container(
                                                     content=ft.Text('Descrição', size=20, color=ft.colors.BLUE_200), 
                                                     padding=ft.padding.only(left=20, top=12)
                                                 ),
+
                                                 ft.Container(
-                                                    content=ft.Text(value=get_unique_disciplina_descricao(materiaAtual), size=25, color=ft.colors.BLUE_200),
+                                                    content=ft.Text(value=get_unique_disciplina_descricao(disciplinaAtual), size=25, color=ft.colors.BLUE_200),
                                                     border_radius=ft.border_radius.all(12),
                                                     bgcolor=ft.colors.WHITE10,
                                                     padding=ft.padding.all(20),
-                                                    alignment=ft.alignment.top_center,
-                                                    #expand=True
+                                                    alignment=ft.alignment.top_center
                                                 ),
+
+                                                ft.Container(
+                                                    content=ft.Text('Materiais', size=20, color=ft.colors.BLUE_200), 
+                                                    padding=ft.padding.only(left=20, top=12)
+                                                ),
+
+                                                materiais_list
                                             ],
                                             scroll='auto',
                                             alignment=ft.alignment.top_center,
@@ -961,7 +1053,52 @@ def main(page: ft.Page):
                 )
             ]
         )
-        return materiaView
+        refresh_materiais()
+        return disciplinaView
+
+    def adiciona_material_view():
+        return ft.View(
+            '/adicionaMaterial',
+            [
+                ft.Column(
+                    [
+                        ft.Row(
+                            [
+                                ft.Container(
+                                    ft.Row(
+                                        [
+                                            ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=go_back),
+                                            ft.Text('Adição de material', size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_200)
+                                        ]
+                                    ),
+                                    width=500
+                                )
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER
+                        ),
+                        ft.Row(
+                            [entradaNomeMaterial],
+                            alignment=ft.MainAxisAlignment.CENTER
+                        ),
+                        ft.Container(
+                            ft.ElevatedButton(
+                                content=ft.Text('Selecionar arquivo', size=18), 
+                                on_click=lambda _: file_picker.pick_files(allowed_extensions=["pdf"]),  
+                                color=ft.colors.BLUE_200,
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.colors.WHITE10,
+                                    padding=ft.padding.all(18),
+                                    shape=ft.RoundedRectangleBorder(radius=12),
+                                )
+                            ), 
+                            alignment=ft.alignment.center
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    expand=True
+                )
+            ]
+        )
 
     page.title = "Livrarie"
     page.padding = 20
@@ -987,6 +1124,22 @@ def main(page: ft.Page):
         else:
             show_view(area_professor_view())
 
+    def seleciona_arquivo(e: FilePickerResultEvent):
+        if not entradaNomeMaterial.value:
+            entradaNomeMaterial.error_text = 'Preencha o título'
+            page.update()
+        elif e.files:
+            arquivo_selecionado = e.files[0].path
+            if arquivo_selecionado:
+                salvar_material(entradaNomeMaterial.value, arquivo_selecionado, disciplinaAtual)
+                print('Material salvo')
+            else:
+                print('Selecione um arquivo')
+
+    file_picker = FilePicker(on_result=seleciona_arquivo)
+    page.overlay.append(file_picker)
+
+    entradaNomeMaterial = ft.TextField(label='Título do material', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200, width=500)
     entradaMatricula = ft.TextField(label='Matrícula', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
     entradaSenha = ft.TextField(label='Senha', password=True, border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
 
