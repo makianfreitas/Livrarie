@@ -222,7 +222,7 @@ def get_unique_material_arquivo():
     return row[0] if row else None
 
 disciplinaAtual = -1
-professorAtual = 1
+professorAtual = 3
 alunoAtual = 5
 materialAtual = -1
 
@@ -319,7 +319,56 @@ def main(page: ft.Page):
         page.update()
     alunos_banco_list = ft.Column()
 
-    def refresh_materiais():
+    def refresh_materiais_aluno():
+        def abrir_pdf(e):
+            global materialAtual
+            materialAtual = e.control.data
+            arquivo_pdf = get_unique_material_arquivo()
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+            temp_file.write(arquivo_pdf)
+            temp_file.close()
+            page.launch_url(f"file:///{temp_file.name}")
+            print(materialAtual)
+            def on_close(e):
+                if os.path.exists(temp_file.name):
+                    os.remove(temp_file.name)
+            
+            page.on_close = on_close
+
+        materiais_list_aluno.controls.clear()
+        if get_materiais(disciplinaAtual) != None:
+            for material in get_materiais(disciplinaAtual):
+                materiais_list_aluno.controls.append(
+                    ft.Container(
+                        content=ft.ListTile(
+                            title=ft.Text(
+                                material[1], 
+                                size=25, 
+                                color=ft.colors.BLUE_200, 
+                                weight=ft.FontWeight.BOLD
+                            ),
+                            data=material[0],
+                            on_click=lambda e: abrir_pdf(e)
+                        ),
+                        border_radius=ft.border_radius.all(12),
+                        bgcolor=ft.colors.WHITE10
+                    )
+                )
+        else: 
+            materiais_list_aluno.controls.append(
+                ft.Container(
+                    content=ft.Text(
+                        value='Não há nenhum material',
+                        size=25,
+                        color=ft.colors.BLUE_200
+                    ),
+                    padding=ft.padding.only(left=30)
+                )
+            )
+        page.update()
+    materiais_list_aluno = ft.Column()
+
+    def refresh_materiais_professor():
         def abrir_pdf(e):
             global materialAtual
             materialAtual = e.control.data
@@ -338,7 +387,7 @@ def main(page: ft.Page):
         def apagar_material(e):
             apagar_material_do_banco_de_dados(e)
             fechar_dialogo_apagar_material(e)
-            refresh_materiais()
+            refresh_materiais_professor()
             page.snack_bar = ft.SnackBar(content=ft.Text('Material apagado com sucesso', size=20))
             page.snack_bar.open = True
             page.update()
@@ -363,10 +412,10 @@ def main(page: ft.Page):
             ]
         )
 
-        materiais_list.controls.clear()
+        materiais_list_professor.controls.clear()
         if get_materiais(disciplinaAtual) != None:
             for material in get_materiais(disciplinaAtual):
-                materiais_list.controls.append(
+                materiais_list_professor.controls.append(
                     ft.Container(
                         content=ft.ListTile(
                             title=ft.Text(
@@ -388,7 +437,7 @@ def main(page: ft.Page):
                         bgcolor=ft.colors.WHITE10
                     )
                 )
-        materiais_list.controls.append(
+        materiais_list_professor.controls.append(
                 ft.ElevatedButton(
                     content=ft.Text(
                         value='Adicionar material',
@@ -406,7 +455,7 @@ def main(page: ft.Page):
                 )
             )
         page.update()
-    materiais_list = ft.Column()
+    materiais_list_professor = ft.Column()
 
     def refresh_disciplinas():
         def abrir_pagina_disciplina(e):
@@ -969,7 +1018,7 @@ def main(page: ft.Page):
         return areaView
 
     def disciplina_aluno_view(): #Página de detalhes da matéria do aluno
-        return ft.View(
+        disciplinaView = ft.View(
             '/disciplinaAluno',
             [
                 ft.Column(
@@ -996,18 +1045,46 @@ def main(page: ft.Page):
                                 )
                             ]
                         ),
-                        ft.Container(ft.Text(value=get_unique_professor_nome(get_unique_disciplina_professorid(disciplinaAtual)), size=20, color=ft.colors.BLUE_200), padding=ft.padding.only(left=20, top=12)),
-                        ft.Container(
-                            content=ft.Text(value=get_unique_disciplina_descricao(disciplinaAtual), size=30, color=ft.colors.BLUE_200),
-                            border_radius=ft.border_radius.all(12),
-                            bgcolor=ft.colors.WHITE10,
-                            padding=ft.padding.all(20)
+                        
+                        # Descrição e materiais
+                        ft.Column(
+                            [
+                                ft.Container(
+                                    ft.Text(
+                                        value=get_unique_professor_nome(get_unique_disciplina_professorid(disciplinaAtual)), 
+                                        size=20, 
+                                        color=ft.colors.BLUE_200
+                                    ), 
+                                    padding=ft.padding.only(left=20, top=12)
+                                ),
+
+                                # Descrição
+                                ft.Container(
+                                    content=ft.Text(value=get_unique_disciplina_descricao(disciplinaAtual), size=30, color=ft.colors.BLUE_200),
+                                    border_radius=ft.border_radius.all(12),
+                                    bgcolor=ft.colors.WHITE10,
+                                    padding=ft.padding.all(20)
+                                ),
+
+                                ft.Container(
+                                    content=ft.Text('Materiais', size=20, color=ft.colors.BLUE_200), 
+                                    padding=ft.padding.only(left=20, top=12)
+                                ),
+
+                                # Lista de materiais
+                                materiais_list_aluno
+                            ],
+                            scroll='auto',
+                            alignment=ft.alignment.top_center,
+                            expand=True
                         )
                     ],
                     expand=True  # Expande a Column principal para ocupar o espaço vertical da página
                 )
             ]
         )
+        refresh_materiais_aluno()
+        return disciplinaView
 
     def disciplina_professor_view(): #Página de detalhes da matéria do professor
         def exibir_alunos():
@@ -1074,6 +1151,7 @@ def main(page: ft.Page):
                                                     padding=ft.padding.only(left=20, top=12)
                                                 ),
 
+                                                # Descrição
                                                 ft.Container(
                                                     content=ft.Text(value=get_unique_disciplina_descricao(disciplinaAtual), size=25, color=ft.colors.BLUE_200),
                                                     border_radius=ft.border_radius.all(12),
@@ -1087,7 +1165,8 @@ def main(page: ft.Page):
                                                     padding=ft.padding.only(left=20, top=12)
                                                 ),
 
-                                                materiais_list
+                                                # Lista de materiais
+                                                materiais_list_professor
                                             ],
                                             scroll='auto',
                                             alignment=ft.alignment.top_center,
@@ -1128,7 +1207,7 @@ def main(page: ft.Page):
                 )
             ]
         )
-        refresh_materiais()
+        refresh_materiais_professor()
         return disciplinaView
 
     def adiciona_material_view():
@@ -1158,7 +1237,7 @@ def main(page: ft.Page):
                         ft.Container(
                             ft.ElevatedButton(
                                 content=ft.Text('Selecionar arquivo', size=18), 
-                                on_click=lambda _: file_picker.pick_files(allowed_extensions=["pdf"]),  
+                                on_click=lambda _: seleciona_arquivo(),  
                                 color=ft.colors.BLUE_200,
                                 style=ft.ButtonStyle(
                                     bgcolor=ft.colors.WHITE10,
@@ -1199,16 +1278,20 @@ def main(page: ft.Page):
         else:
             show_view(area_professor_view())
 
-    def seleciona_arquivo(e: FilePickerResultEvent):
+    def seleciona_arquivo():
         if not entradaNomeMaterial.value:
             entradaNomeMaterial.error_text = 'Preencha o título'
             page.update()
-        elif e.files:
+        else:
+            file_picker.pick_files(allowed_extensions=["pdf"])
+
+    def adiciona_arquivo(e: FilePickerResultEvent):
+        if e.files:
             arquivo_selecionado = e.files[0].path
             if arquivo_selecionado:
                 salvar_material(entradaNomeMaterial.value, arquivo_selecionado, disciplinaAtual)
                 go_back(e)
-                refresh_materiais()
+                refresh_materiais_professor()
                 page.snack_bar = ft.SnackBar(content=ft.Text('Material adicionado com sucesso', size=20))
                 page.snack_bar.open = True
                 page.update()
@@ -1216,7 +1299,7 @@ def main(page: ft.Page):
             else:
                 print('Selecione um arquivo')
 
-    file_picker = FilePicker(on_result=seleciona_arquivo)
+    file_picker = FilePicker(on_result=adiciona_arquivo)
     page.overlay.append(file_picker)
 
     entradaNomeMaterial = ft.TextField(label='Título do material', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200, width=500)
