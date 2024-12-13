@@ -222,8 +222,8 @@ def get_unique_material_arquivo():
     return row[0] if row else None
 
 disciplinaAtual = -1
-professorAtual = 3
-alunoAtual = 5
+professorAtual = -1
+alunoAtual = -1
 materialAtual = -1
 
 def main(page: ft.Page):
@@ -340,17 +340,111 @@ def main(page: ft.Page):
             for material in get_materiais(disciplinaAtual):
                 materiais_list_aluno.controls.append(
                     ft.Container(
-                        content=ft.ListTile(
-                            title=ft.Text(
-                                material[1], 
-                                size=25, 
-                                color=ft.colors.BLUE_200, 
-                                weight=ft.FontWeight.BOLD
-                            ),
-                            data=material[0],
-                            on_click=lambda e: abrir_pdf(e)
+                        content=ft.Column(
+                            [
+                                ft.ListTile(
+                                    title=ft.Text(
+                                        material[1], 
+                                        size=25, 
+                                        color=ft.colors.BLUE_200, 
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                    data=material[0],
+                                    on_click=lambda e: abrir_pdf(e)
+                                ),
+                                ft.Container(
+                                    content=ft.Row(
+                                        [
+                                            ft.IconButton(icon=ft.icons.THUMB_UP_ROUNDED),
+                                            ft.Text('3', size=18, color=ft.colors.BLUE_200),
+                                            ft.IconButton(icon=ft.icons.THUMB_DOWN_ROUNDED),
+                                            ft.Text('1', size=18, color=ft.colors.BLUE_200)
+                                        ]
+                                    ),
+                                    padding=ft.padding.only(left=12)
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    ft.Text(
+                                                        value='Pedro Álvares',
+                                                        size=22,
+                                                        color=ft.colors.BLUE_200,
+                                                        weight=ft.FontWeight.BOLD
+                                                    ),
+                                                    ft.Text(
+                                                        value='Olá, professora. Em qual slide parou semana passada?',
+                                                        size=18,
+                                                        color=ft.colors.BLUE_200
+                                                    )
+                                                ]
+                                            ),
+                                            border_radius=ft.border_radius.all(12),
+                                            padding=ft.padding.all(20),
+                                            border=ft.border.all(2, ft.colors.BLUE_200),
+                                            expand=True
+                                        )
+                                    ],
+                                    expand=True
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    ft.Text(
+                                                        value='Larissa Rocha',
+                                                        size=22,
+                                                        color=ft.colors.BLUE_200,
+                                                        weight=ft.FontWeight.BOLD
+                                                    ),
+                                                    ft.Text(
+                                                        value='Oi, Pedro. Na última aula nós paramos no slide 36.',
+                                                        size=18,
+                                                        color=ft.colors.BLUE_200
+                                                    )
+                                                ]
+                                            ),
+                                            border_radius=ft.border_radius.all(12),
+                                            padding=ft.padding.all(20),
+                                            border=ft.border.all(2, ft.colors.BLUE_200),
+                                            expand=True
+                                        )
+                                    ],
+                                    expand=True
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    ft.Text(
+                                                        value='Pedro Álvares',
+                                                        size=22,
+                                                        color=ft.colors.BLUE_200,
+                                                        weight=ft.FontWeight.BOLD
+                                                    ),
+                                                    ft.Text(
+                                                        value='Obrigado!',
+                                                        size=18,
+                                                        color=ft.colors.BLUE_200
+                                                    )
+                                                ]
+                                            ),
+                                            border_radius=ft.border_radius.all(12),
+                                            padding=ft.padding.all(20),
+                                            border=ft.border.all(2, ft.colors.BLUE_200),
+                                            expand=True
+                                        )
+                                    ],
+                                    expand=True
+                                )
+                            ]
                         ),
                         border_radius=ft.border_radius.all(12),
+                        padding=ft.padding.all(12),
                         bgcolor=ft.colors.WHITE10
                     )
                 )
@@ -417,23 +511,117 @@ def main(page: ft.Page):
             for material in get_materiais(disciplinaAtual):
                 materiais_list_professor.controls.append(
                     ft.Container(
-                        content=ft.ListTile(
-                            title=ft.Text(
-                                material[1], 
-                                size=25, 
-                                color=ft.colors.BLUE_200, 
-                                weight=ft.FontWeight.BOLD
-                            ),
-                            data=material[0],
-                            on_click=lambda e: abrir_pdf(e),
-                            trailing=ft.IconButton(
-                                ft.icons.DELETE_ROUNDED, 
-                                icon_color=ft.colors.RED_400,
-                                data=material[0],
-                                on_click=lambda e: abrir_dialogo_apagar_material(e)
-                            )
+                        content=ft.Column(
+                            [
+                                ft.ListTile(
+                                    title=ft.Text(
+                                        material[1], 
+                                        size=25, 
+                                        color=ft.colors.BLUE_200, 
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                    data=material[0],
+                                    on_click=lambda e: abrir_pdf(e),
+                                    trailing=ft.IconButton(
+                                        ft.icons.DELETE_ROUNDED, 
+                                        icon_color=ft.colors.RED_400,
+                                        data=material[0],
+                                        on_click=lambda e: abrir_dialogo_apagar_material(e)
+                                    )
+                                ),
+                                ft.Container(
+                                    content=ft.Row(
+                                        [
+                                            ft.IconButton(icon=ft.icons.THUMB_UP_ROUNDED),
+                                            ft.Text('3', size=18, color=ft.colors.BLUE_200),
+                                            ft.IconButton(icon=ft.icons.THUMB_DOWN_ROUNDED),
+                                            ft.Text('1', size=18, color=ft.colors.BLUE_200)
+                                        ]
+                                    ),
+                                    padding=ft.padding.only(left=12)
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    ft.Text(
+                                                        value='Pedro Álvares',
+                                                        size=22,
+                                                        color=ft.colors.BLUE_200,
+                                                        weight=ft.FontWeight.BOLD
+                                                    ),
+                                                    ft.Text(
+                                                        value='Olá, professora. Em qual slide parou semana passada?',
+                                                        size=18,
+                                                        color=ft.colors.BLUE_200
+                                                    )
+                                                ]
+                                            ),
+                                            border_radius=ft.border_radius.all(12),
+                                            padding=ft.padding.all(20),
+                                            border=ft.border.all(2, ft.colors.BLUE_200),
+                                            expand=True
+                                        )
+                                    ],
+                                    expand=True
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    ft.Text(
+                                                        value='Larissa Rocha',
+                                                        size=22,
+                                                        color=ft.colors.BLUE_200,
+                                                        weight=ft.FontWeight.BOLD
+                                                    ),
+                                                    ft.Text(
+                                                        value='Oi, Pedro. Na última aula nós paramos no slide 36.',
+                                                        size=18,
+                                                        color=ft.colors.BLUE_200
+                                                    )
+                                                ]
+                                            ),
+                                            border_radius=ft.border_radius.all(12),
+                                            padding=ft.padding.all(20),
+                                            border=ft.border.all(2, ft.colors.BLUE_200),
+                                            expand=True
+                                        )
+                                    ],
+                                    expand=True
+                                ),
+                                ft.Row(
+                                    [
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    ft.Text(
+                                                        value='Pedro Álvares',
+                                                        size=22,
+                                                        color=ft.colors.BLUE_200,
+                                                        weight=ft.FontWeight.BOLD
+                                                    ),
+                                                    ft.Text(
+                                                        value='Obrigado!',
+                                                        size=18,
+                                                        color=ft.colors.BLUE_200
+                                                    )
+                                                ]
+                                            ),
+                                            border_radius=ft.border_radius.all(12),
+                                            padding=ft.padding.all(20),
+                                            border=ft.border.all(2, ft.colors.BLUE_200),
+                                            expand=True
+                                        )
+                                    ],
+                                    expand=True
+                                )
+                            ]
                         ),
                         border_radius=ft.border_radius.all(12),
+                        padding=ft.padding.all(12),
                         bgcolor=ft.colors.WHITE10
                     )
                 )
@@ -548,11 +736,11 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Row(
-                            [entradaMatricula],
+                            [entradaMatriculaAluno],
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Row(
-                            [entradaSenha],
+                            [entradaSenhaAluno],
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Container(
@@ -597,11 +785,11 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Row(
-                            [entradaMatricula],
+                            [entradaMatriculaProfessor],
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Row(
-                            [entradaSenha],
+                            [entradaSenhaProfessor],
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
                         ft.Container(
@@ -889,11 +1077,11 @@ def main(page: ft.Page):
                                                             ft.Column(
                                                                 [
                                                                     ft.Text('Projeto - Segunda etapa', size=24, color=ft.colors.BLUE_200, weight=ft.FontWeight.BOLD),
-                                                                    ft.Text('Metodologia de Desenvolvimento de Sistemas 2', size=18, color=ft.colors.BLUE_200)
+                                                                    ft.Text('Metodologia de Desenvolvimento de Sistemas', size=18, color=ft.colors.BLUE_200)
                                                                 ],
                                                                 expand=True
                                                             ),
-                                                            ft.Text('Prazo de entrega:\n13/11/2024, 08:00', color=ft.colors.RED_500)
+                                                            ft.Text('Prazo de entrega:\n13/12/2024, 08:00', color=ft.colors.RED_500)
                                                         ]
                                                     ),
                                                     ft.Row(
@@ -905,7 +1093,7 @@ def main(page: ft.Page):
                                                                 ],
                                                                 expand=True
                                                             ),
-                                                            ft.Text('Prazo de entrega:\n15/11/2024, 23:59', color=ft.colors.BLUE_200)
+                                                            ft.Text('Prazo de entrega:\n15/12/2024, 23:59', color=ft.colors.BLUE_200)
                                                         ]
                                                     )
                                                 ],
@@ -986,9 +1174,11 @@ def main(page: ft.Page):
                                 )
                             ]
                         ),
+                        
                         # Seção principal com as disciplinas e atividades pendentes
                         ft.Row(
                             [
+                                #Coluna das disciplinas
                                 ft.Column(
                                     [
                                         ft.Container(
@@ -1005,6 +1195,80 @@ def main(page: ft.Page):
                                         )
                                     ],
                                     expand=True
+                                ),
+
+                                #Coluna de comentários recentes
+                                ft.Column(
+                                    [
+                                        ft.Container(
+                                            content=ft.Text('Comentários recentes', size=20, color=ft.colors.BLUE_200), 
+                                            padding=ft.padding.only(left=20, top=12)
+                                        ),
+                                        
+                                        ft.Container(
+                                            content=ft.Column(
+                                                [
+                                                    ft.Row(
+                                                        [
+                                                            ft.Container(
+                                                                content=ft.Column(
+                                                                    [
+                                                                        ft.Text(
+                                                                            value='Pedro Álvares',
+                                                                            size=22,
+                                                                            color=ft.colors.BLUE_200,
+                                                                            weight=ft.FontWeight.BOLD
+                                                                        ),
+                                                                        ft.Text(
+                                                                            value='Olá, professora. Em qual slide parou semana passada?',
+                                                                            size=18,
+                                                                            color=ft.colors.BLUE_200
+                                                                        )
+                                                                    ],
+                                                                ),
+                                                                border_radius=ft.border_radius.all(12),
+                                                                padding=ft.padding.all(20),
+                                                                border=ft.border.all(2, ft.colors.BLUE_200),
+                                                                expand=True
+                                                            )
+                                                        ],
+                                                    ),
+
+                                                    ft.Row(
+                                                        [
+                                                            ft.Container(
+                                                                content=ft.Column(
+                                                                    [
+                                                                        ft.Text(
+                                                                            value='Pedro Álvares',
+                                                                            size=22,
+                                                                            color=ft.colors.BLUE_200,
+                                                                            weight=ft.FontWeight.BOLD
+                                                                        ),
+                                                                        ft.Text(
+                                                                            value='Obrigado!',
+                                                                            size=18,
+                                                                            color=ft.colors.BLUE_200
+                                                                        )
+                                                                    ],
+                                                                ),
+                                                                border_radius=ft.border_radius.all(12),
+                                                                padding=ft.padding.all(20),
+                                                                border=ft.border.all(2, ft.colors.BLUE_200),
+                                                                expand=True
+                                                            )
+                                                        ],
+                                                    )
+                                                ],
+                                                scroll='auto'
+                                            ),
+                                            border_radius=ft.border_radius.all(12),
+                                            bgcolor=ft.colors.WHITE10,
+                                            padding=ft.padding.all(20),
+                                            expand=True
+                                        )
+                                    ],
+                                    expand=True  # Expande a coluna para ocupar o espaço verticalmente
                                 )
                             ],
                             expand=True  # Expande a Row para ocupar o espaço horizontalmente
@@ -1069,6 +1333,20 @@ def main(page: ft.Page):
                                 ft.Container(
                                     content=ft.Text('Materiais', size=20, color=ft.colors.BLUE_200), 
                                     padding=ft.padding.only(left=20, top=12)
+                                ),
+
+                                # Barra de pesquisa
+                                ft.Container(
+                                    content=ft.Row(
+                                        [
+                                            ft.Icon(ft.icons.SEARCH_ROUNDED, color=ft.colors.WHITE30),
+                                            ft.Text('Pesquisar', color=ft.colors.WHITE30, size=20)
+                                        ]
+                                    ),
+                                    border_radius=ft.border_radius.all(50),
+                                    border=ft.border.all(2, ft.colors.WHITE30),
+                                    bgcolor=ft.colors.WHITE10,
+                                    padding=ft.padding.all(20)
                                 ),
 
                                 # Lista de materiais
@@ -1165,6 +1443,20 @@ def main(page: ft.Page):
                                                     padding=ft.padding.only(left=20, top=12)
                                                 ),
 
+                                                # Barra de pesquisa
+                                                ft.Container(
+                                                    content=ft.Row(
+                                                        [
+                                                            ft.Icon(ft.icons.SEARCH_ROUNDED, color=ft.colors.WHITE30),
+                                                            ft.Text('Pesquisar', color=ft.colors.WHITE30, size=20)
+                                                        ]
+                                                    ),
+                                                    border_radius=ft.border_radius.all(50),
+                                                    border=ft.border.all(2, ft.colors.WHITE30),
+                                                    bgcolor=ft.colors.WHITE10,
+                                                    padding=ft.padding.all(20)
+                                                ),
+
                                                 # Lista de materiais
                                                 materiais_list_professor
                                             ],
@@ -1210,7 +1502,7 @@ def main(page: ft.Page):
         refresh_materiais_professor()
         return disciplinaView
 
-    def adiciona_material_view():
+    def adiciona_material_view(): #Página de adição de material
         return ft.View(
             '/adicionaMaterial',
             [
@@ -1259,23 +1551,81 @@ def main(page: ft.Page):
     show_view(home_view())
 
     def loginAluno(e):
-        if not entradaMatricula.value:
-            entradaMatricula.error_text = 'Preencha a matrícula'
+        global alunoAtual
+        if not entradaMatriculaAluno.value:
+            entradaMatriculaAluno.error_text = 'Preencha a matrícula'
             page.update()
-        elif not entradaSenha.value:
-            entradaSenha.error_text = 'Preencha a senha'
+        elif not entradaSenhaAluno.value:
+            entradaSenhaAluno.error_text = 'Preencha a senha'
             page.update()
         else:
+            if entradaSenhaAluno.value != '12345678910':
+                page.snack_bar = ft.SnackBar(content=ft.Text('Usuário ou senha incorreto!', size=20, color=ft.colors.RED_900))
+                page.snack_bar.open = True
+                page.update()
+                return
+
+            match(entradaMatriculaAluno.value):
+                case '22210010':
+                    alunoAtual = 1
+                case '22210011':
+                    alunoAtual = 2
+                case '22210012':
+                    alunoAtual = 3
+                case '22210013':
+                    alunoAtual = 4
+                case '22210014':
+                    alunoAtual = 5
+                case '22210015':
+                    alunoAtual = 6
+                case '22210016':
+                    alunoAtual = 7
+                case '22210017':
+                    alunoAtual = 8
+                case '22210018':
+                    alunoAtual = 9
+                case '22210019':
+                    alunoAtual = 10
+                case _:
+                    page.snack_bar = ft.SnackBar(content=ft.Text('Usuário ou senha incorreto!', size=20, color=ft.colors.RED_900))
+                    page.snack_bar.open = True
+                    page.update()
+                    return
             show_view(area_aluno_view())
 
     def loginProfessor(e):
-        if not entradaMatricula.value:
-            entradaMatricula.error_text = 'Preencha a matrícula'
+        global professorAtual
+        if not entradaMatriculaProfessor.value:
+            entradaMatriculaProfessor.error_text = 'Preencha a matrícula'
             page.update()
-        elif not entradaSenha.value:
-            entradaSenha.error_text = 'Preencha a senha'
+        elif not entradaSenhaProfessor.value:
+            entradaSenhaProfessor.error_text = 'Preencha a senha'
             page.update()
         else:
+            if entradaSenhaProfessor.value != '12345678910':
+                page.snack_bar = ft.SnackBar(content=ft.Text('Usuário ou senha incorreto!', size=20, color=ft.colors.RED_900))
+                page.snack_bar.open = True
+                page.update()
+                return
+
+            match(entradaMatriculaProfessor.value):
+                case '33310010':
+                    professorAtual = 1
+                case '33310011':
+                    professorAtual = 2
+                case '33310012':
+                    professorAtual = 3
+                case '33310013':
+                    professorAtual = 4
+                case '33310014':
+                    professorAtual = 5
+                case '33310015':
+                    professorAtual = 6
+                case _:
+                    page.snack_bar = ft.SnackBar(content=ft.Text('Usuário ou senha incorreto!', size=20, color=ft.colors.RED_900))
+                    page.snack_bar.open = True
+                    page.update()
+                    return
             show_view(area_professor_view())
 
     def seleciona_arquivo():
@@ -1303,8 +1653,10 @@ def main(page: ft.Page):
     page.overlay.append(file_picker)
 
     entradaNomeMaterial = ft.TextField(label='Título do material', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200, width=500)
-    entradaMatricula = ft.TextField(label='Matrícula', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
-    entradaSenha = ft.TextField(label='Senha', password=True, border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
+    entradaMatriculaAluno = ft.TextField(label='Matrícula', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
+    entradaSenhaAluno = ft.TextField(label='Senha', password=True, border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
+    entradaMatriculaProfessor = ft.TextField(label='Matrícula', border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
+    entradaSenhaProfessor = ft.TextField(label='Senha', password=True, border_color=ft.colors.WHITE60, focused_border_color=ft.colors.BLUE_200)
 
     page.update()
 
