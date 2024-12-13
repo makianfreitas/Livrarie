@@ -1,5 +1,7 @@
 # Livrarie
 
+import os
+import tempfile
 import flet as ft
 import sqlite3
 from flet import FilePicker, FilePickerResultEvent
@@ -203,18 +205,18 @@ def apagar_material_do_banco_de_dados(e):
     conn.commit()
     conn.close()
 
-def get_unique_material_titulo(materialId):
+def get_unique_material_titulo():
     conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
     cursor = conn.cursor()
-    cursor.execute("SELECT Titulo FROM Material WHERE IdMaterial = ?", (materialId,))
+    cursor.execute("SELECT Titulo FROM Material WHERE IdMaterial = ?", (materialAtual,))
     row = cursor.fetchone()
     conn.close()
     return row[0] if row else None
 
-def get_unique_material_arquivo(materialId):
+def get_unique_material_arquivo():
     conn = sqlite3.connect("livrarie.db")  # Conecta ao banco de dados
     cursor = conn.cursor()
-    cursor.execute("SELECT Arquivo FROM Material WHERE IdMaterial = ?", (materialId,))
+    cursor.execute("SELECT Arquivo FROM Material WHERE IdMaterial = ?", (materialAtual,))
     row = cursor.fetchone()
     conn.close()
     return row[0] if row else None
@@ -318,6 +320,21 @@ def main(page: ft.Page):
     alunos_banco_list = ft.Column()
 
     def refresh_materiais():
+        def abrir_pdf(e):
+            global materialAtual
+            materialAtual = e.control.data
+            arquivo_pdf = get_unique_material_arquivo()
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+            temp_file.write(arquivo_pdf)
+            temp_file.close()
+            page.launch_url(f"file:///{temp_file.name}")
+            print(materialAtual)
+            def on_close(e):
+                if os.path.exists(temp_file.name):
+                    os.remove(temp_file.name)
+            
+            page.on_close = on_close
+
         def apagar_material(e):
             apagar_material_do_banco_de_dados(e)
             fechar_dialogo_apagar_material(e)
@@ -359,7 +376,7 @@ def main(page: ft.Page):
                                 weight=ft.FontWeight.BOLD
                             ),
                             data=material[0],
-                            #on_click=lambda e: abrir_dialogo_apagar_material(e),
+                            on_click=lambda e: abrir_pdf(e),
                             trailing=ft.IconButton(
                                 ft.icons.DELETE_ROUNDED, 
                                 icon_color=ft.colors.RED_400,
@@ -1153,40 +1170,6 @@ def main(page: ft.Page):
                         )
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
-                    expand=True
-                )
-            ]
-        )
-
-    def detalhe_material_view():
-        return ft.View(
-            '/detalheMaterial',
-            [
-                ft.Column(
-                    [
-                        # Cabeçalho da página
-                        ft.Row(
-                            [
-                                ft.Container(
-                                    content=ft.Row(
-                                        [
-                                            ft.IconButton(icon=ft.icons.ARROW_BACK_ROUNDED, on_click=go_back, icon_color=ft.colors.BLACK87),
-                                            ft.Text(
-                                                value=get_unique_material_titulo(), 
-                                                size=40, 
-                                                weight=ft.FontWeight.BOLD, 
-                                                color=ft.colors.BLACK87
-                                            )
-                                        ]
-                                    ),
-                                    padding=ft.padding.all(20), 
-                                    bgcolor=ft.colors.BLUE_200, 
-                                    border_radius=12, 
-                                    expand=True
-                                )
-                            ]
-                        ),
-                    ],
                     expand=True
                 )
             ]
